@@ -3,7 +3,7 @@ module dangling-dns
 go 1.24.1
 
 require (
-	github.com/miekg/dns v1.1.63 // indirect
+	github.com/miekg/dns v1.1.63 // direct
 	golang.org/x/mod v0.18.0 // indirect
 	golang.org/x/net v0.31.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
