@@ -21,20 +21,27 @@ type DNSResult struct {
 
 func main() {
     delayMs := flag.Int("delay", 100, "Delay between DNS lookups in milliseconds")
+    singleDomain := flag.String("domain", "", "Single domain to check (overrides domains file)")
     flag.Parse()
 
-    if len(flag.Args()) < 1 {
-        fmt.Println("Usage: dangdns [-delay ms] <domains_file.txt>")
-        fmt.Println("  -delay: milliseconds to wait between DNS lookups (default: 100)")
-        fmt.Println("File should contain one domain per line")
-        os.Exit(1)
-    }
+    var domains []string
+    var err error
 
-    domainsFile := flag.Args()[0]
-    domains, err := readDomains(domainsFile)
-    if err != nil {
-        fmt.Printf("Error reading domains file: %v\n", err)
+    if *singleDomain != "" {
+        domains = []string{*singleDomain}
+    } else if len(flag.Args()) < 1 {
+        fmt.Println("Usage: dnscheck [-delay ms] [-domain single.domain.com] [domains_file.txt]")
+        fmt.Println("  -delay: milliseconds to wait between DNS lookups (default: 100)")
+        fmt.Println("  -domain: check a single domain (optional)")
+        fmt.Println("  domains_file.txt: file with one domain per line (required if -domain not used)")
         os.Exit(1)
+    } else {
+        domainsFile := flag.Args()[0]
+        domains, err = readDomains(domainsFile)
+        if err != nil {
+            fmt.Printf("Error reading domains file: %v\n", err)
+            os.Exit(1)
+        }
     }
 
     delay := time.Duration(*delayMs) * time.Millisecond
